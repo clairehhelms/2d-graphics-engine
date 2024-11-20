@@ -34,7 +34,11 @@ static double handle_proc(GBenchmark* bench, const char path[], GBitmap* bitmap,
         return 0;
     }
 
+#ifdef NDEBUG
     int N = 100;
+#else
+    int N = 1;
+#endif
     bool forever = false;
     switch (mode) {
         case kNormal: break;

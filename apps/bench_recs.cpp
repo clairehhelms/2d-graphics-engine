@@ -25,8 +25,8 @@ static GRect rand_rect(GRandom& rand, const GRect& bounds) {
         rand.nextF() * x - bounds.left(), rand.nextF() * y - bounds.top(),
         rand.nextF() * x - bounds.left(), rand.nextF() * y - bounds.top()
     };
-    return GRect::MakeXYWH(std::min(tmp[0], tmp[2]), std::min(tmp[1], tmp[3]),
-                           std::max(tmp[0], tmp[2]), std::max(tmp[1], tmp[3]));
+    return GRect::XYWH(std::min(tmp[0], tmp[2]), std::min(tmp[1], tmp[3]),
+                       std::max(tmp[0], tmp[2]), std::max(tmp[1], tmp[3]));
 }
 
 class RectsBench : public GBenchmark {
@@ -34,12 +34,12 @@ class RectsBench : public GBenchmark {
     const bool fForceOpaque;
 public:
     RectsBench(bool forceOpaque) : fForceOpaque(forceOpaque) {}
-
+    
     const char* name() const override { return fForceOpaque ? "rects_opaque" : "rects_blend"; }
     GISize size() const override { return { W, H }; }
     void draw(GCanvas* canvas) override {
         const int N = 500;
-        const GRect bounds = GRect::MakeLTRB(-10, -10, W + 10, H + 10);
+        const GRect bounds = GRect::LTRB(-10, -10, W + 10, H + 10);
         GRandom rand;
         for (int i = 0; i < N; ++i) {
             GColor color = rand_color(rand, fForceOpaque);
@@ -55,7 +55,7 @@ class SingleRectBench : public GBenchmark {
     const char*     fName;
 public:
     SingleRectBench(GISize size, GRect r, const char* name) : fSize(size), fRect(r), fName(name) {}
-
+    
     const char* name() const override { return fName; }
     GISize size() const override { return fSize; }
     void draw(GCanvas* canvas) override {
@@ -78,10 +78,10 @@ const GBenchmark::Factory gBenchFactories[] {
     []() -> GBenchmark* { return new RectsBench(false); },
     []() -> GBenchmark* { return new RectsBench(true);  },
     []() -> GBenchmark* {
-        return new SingleRectBench({2,2}, GRect::MakeLTRB(-1000, -1000, 1002, 1002), "rect_big");
+        return new SingleRectBench({2,2}, GRect::LTRB(-1000, -1000, 1002, 1002), "rect_big");
     },
     []() -> GBenchmark* {
-        return new SingleRectBench({1000,1000}, GRect::MakeLTRB(500, 500, 502, 502), "rect_tiny");
+        return new SingleRectBench({1000,1000}, GRect::LTRB(500, 500, 502, 502), "rect_tiny");
     },
 
     // pa2

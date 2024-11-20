@@ -10,13 +10,13 @@ static void test_path(GTestStats* stats) {
     GPoint pts[2];
     GPath path;
 
-    EXPECT_EQ(stats, path.bounds(), GRect::MakeWH(0,0));
+    EXPECT_EQ(stats, path.bounds(), GRect::WH(0,0));
     EXPECT_EQ(stats, GPath::Iter(path).next(pts), GPath::kDone);
 
     path.moveTo(10, 20);
-    EXPECT_EQ(stats, path.bounds(), GRect::MakeXYWH(10, 20, 0, 0));
+    EXPECT_EQ(stats, path.bounds(), GRect::XYWH(10, 20, 0, 0));
     path.lineTo(30, 0);
-    EXPECT_EQ(stats, path.bounds(), GRect::MakeLTRB(10, 0, 30, 20));
+    EXPECT_EQ(stats, path.bounds(), GRect::LTRB(10, 0, 30, 20));
 
     GPath::Iter iter(path);
     EXPECT_EQ(stats, iter.next(pts), GPath::kMove);
@@ -29,7 +29,7 @@ static void test_path(GTestStats* stats) {
     GPath p2 = path;
     EXPECT_EQ(stats, p2.bounds(), path.bounds());
     p2.transform(GMatrix::Scale(0.5, 2));
-    EXPECT_EQ(stats, p2.bounds(), GRect::MakeLTRB(5, 0, 15, 40));
+    EXPECT_EQ(stats, p2.bounds(), GRect::LTRB(5, 0, 15, 40));
 
     const GPoint p[] = { {10, 10}, {20, 20}, {30, 30} };
     int N = 0;
@@ -67,38 +67,42 @@ static bool expect_iter(const GPath& path, const GPoint expected_pts[], int coun
 
 static void test_path_rect(GTestStats* stats) {
     GPath p;
-    EXPECT_TRUE(stats, GRect::MakeWH(0, 0) == p.bounds());
+    EXPECT_TRUE(stats, GRect::WH(0, 0) == p.bounds());
 
-    GRect r = GRect::MakeLTRB(10, 20, 30, 40);
+    // allow 4 or 5 points in the rect-path (auto closed or manually closed)
+
+    GRect r = GRect::LTRB(10, 20, 30, 40);
     p.addRect(r, GPath::kCW_Direction);
     EXPECT_TRUE(stats, p.bounds() == r);
-    const GPoint pts0[] = {{10, 20}, {30, 20}, {30, 40}, {10, 40}};
-    EXPECT_TRUE(stats, expect_iter(p, pts0, 4));
+    const GPoint pts0[] = {{10, 20}, {30, 20}, {30, 40}, {10, 40}, {10, 20}};
+    EXPECT_TRUE(stats, expect_iter(p, pts0, 4) ||
+                       expect_iter(p, pts0, 5));
 
     p.reset();
     p.addRect(r, GPath::kCCW_Direction);
     EXPECT_TRUE(stats, p.bounds() == r);
-    const GPoint pts1[] = {{10, 20}, {10, 40}, {30, 40}, {30, 20}};
-    EXPECT_TRUE(stats, expect_iter(p, pts1, 4));
+    const GPoint pts1[] = {{10, 20}, {10, 40}, {30, 40}, {30, 20}, {10, 20}};
+    EXPECT_TRUE(stats, expect_iter(p, pts1, 4) ||
+                       expect_iter(p, pts1, 5));
 }
 
 static void test_path_poly(GTestStats* stats) {
     const GPoint pts[] = {{-10, -10}, {10, 0}, {0, 10}};
     GPath p;
     p.addPolygon(pts, GARRAY_COUNT(pts));
-    EXPECT_TRUE(stats, GRect::MakeLTRB(-10, -10, 10, 10) == p.bounds());
+    EXPECT_TRUE(stats, GRect::LTRB(-10, -10, 10, 10) == p.bounds());
     EXPECT_TRUE(stats, expect_iter(p, pts, GARRAY_COUNT(pts)));
 }
 
 static void test_path_transform(GTestStats* stats) {
     GPath p;
     const GPoint pts[] = {{10, 20}, {30, 40}, {50, 60}, {70, 80}};
-    GRect r = GRect::MakeLTRB(10, 20, 70, 80);
+    GRect r = GRect::LTRB(10, 20, 70, 80);
 
     p.addPolygon(pts, GARRAY_COUNT(pts));
     EXPECT_TRUE(stats, r == p.bounds());
 
     p.transform(GMatrix::Translate(-30, 20));
-    r.offset(-30, 20);
+    r = r.makeOffset(-30, 20);
     EXPECT_TRUE(stats, r == p.bounds());
 }

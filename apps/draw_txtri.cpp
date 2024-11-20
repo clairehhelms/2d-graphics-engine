@@ -22,9 +22,9 @@ class TxTriShape : public Shape {
 public:
     TxTriShape(const GBitmap& bm) : fBM(bm) {
         this->make_shader();
-        fTex[0].set(20,   20);
-        fTex[1].set(bm.width()/2,  60);
-        fTex[2].set(30, bm.height()/2);
+        fTex[0] = {20,   20};
+        fTex[1] = {bm.width()/2,  60};
+        fTex[2] = {30, bm.height()/2};
 
         GMatrix m = GMatrix::Translate(bm.width(), 50)
                   * GMatrix::Scale(2, 2);
@@ -53,14 +53,14 @@ public:
 
             const float r = 3;
             for (int i = 0; i < 3; ++i) {
-                canvas->drawRect(GRect::MakeLTRB(pts[i].fX - r, pts[i].fY - r,
-                                                 pts[i].fX + r, pts[i].fY + r), paint);
+                canvas->drawRect(GRect::LTRB(pts[i].fX - r, pts[i].fY - r,
+                                             pts[i].fX + r, pts[i].fY + r), paint);
                 draw_line(canvas, pts[i], pts[(i + 1) % 3], color, 1.2f);
             }
         };
 
         GPaint paint(fTexShader.get());
-        canvas->drawRect(GRect::MakeWH(fBM.width(), fBM.height()), paint);
+        canvas->drawRect(GRect::WH(fBM.width(), fBM.height()), paint);
 
         const int indices[] = {0, 1, 2};
         canvas->drawMesh(fPts, nullptr, fTex, 1, indices, paint);
@@ -70,7 +70,7 @@ public:
     }
 
     GRect getRect() override {
-        return GRect::MakeWH(fBM.width(), fBM.height());
+        return GRect::WH(fBM.width(), fBM.height());
     }
 
     GColor onGetColor() override { return {0,0,0,1}; }

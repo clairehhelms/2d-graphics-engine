@@ -38,15 +38,6 @@ struct GPoint {
         *this = *this + o;
         return *this;
     }
-
-    static GPoint Make(float x, float y) {
-        return {x, y};
-    }
-
-    void set(float x, float y) {
-        fX = x;
-        fY = y;
-    }
 };
 
 using GVector = GPoint;

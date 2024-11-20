@@ -55,7 +55,7 @@ protected:
                 GPath::ChopCubicAt(pts, dst, t);
                 p = dst[3];
             }
-            canvas->drawRect(GRect::MakeLTRB(p.fX - r, p.fY - r, p.fX + r, p.fY + r), paint);
+            canvas->drawRect(GRect::LTRB(p.fX - r, p.fY - r, p.fX + r, p.fY + r), paint);
         }
     }
 };

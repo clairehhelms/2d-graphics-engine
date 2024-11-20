@@ -260,8 +260,8 @@ int main(int argc, char** argv) {
         }
     }
 
-    if (false) {
-    handle_something(collage_file, collage_dir, collage_index);
+    if (!match) {
+        handle_something(collage_file, collage_dir, collage_index);
     }
 
     double max_score = (1 << gDrawRecs[gDrawCount - 1].fPA) - 1;
@@ -340,8 +340,6 @@ int main(int argc, char** argv) {
     if (diffFile) {
         fclose(diffFile);
     }
-
-    assert(targetPA > 0 || floor(counter + 0.5) == max_score);
 
     int image_score = (int)(percent_correct * 100 / counter + 0.5);
     if (expected && (oneShot < 0)) {

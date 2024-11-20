@@ -78,7 +78,7 @@ public:
             a = a + dv * 0.5f;
             const float R = 1.4f;
             for (float d = dist * 0.5f; d < len; d += dist) {
-                path->addRect(GRect::MakeLTRB(a.fX - R, a.fY - R, a.fX + R, a.fY + R));
+                path->addRect(GRect::LTRB(a.fX - R, a.fY - R, a.fX + R, a.fY + R));
                 a = a + dv;
             }
         };

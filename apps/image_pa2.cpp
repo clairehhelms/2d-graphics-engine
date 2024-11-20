@@ -16,7 +16,7 @@ static void make_regular_poly(GPoint pts[], int count, float cx, float cy, float
     const float deltaAngle = M_PI * 2 / count;
 
     for (int i = 0; i < count; ++i) {
-        pts[i].set(cx + cos(angle) * radius, cy + sin(angle) * radius);
+        pts[i] = {cx + cos(angle) * radius, cy + sin(angle) * radius};
         angle += deltaAngle;
     }
 }
@@ -49,10 +49,10 @@ static void draw_poly_center(GCanvas* canvas) {
 
 static void outer_frame(GCanvas* canvas, const GRect& r) {
     GPaint paint;
-    canvas->drawRect(GRect::MakeXYWH(r.fLeft - 2, r.fTop - 2, 1, r.height() + 4), paint);
-    canvas->drawRect(GRect::MakeXYWH(r.fRight + 1, r.fTop - 2, 1, r.height() + 4), paint);
-    canvas->drawRect(GRect::MakeXYWH(r.fLeft - 1, r.fTop - 2, r.width() + 2, 1), paint);
-    canvas->drawRect(GRect::MakeXYWH(r.fLeft - 1, r.fBottom + 1, r.width() + 2, 1), paint);
+    canvas->drawRect(GRect::XYWH(r.fLeft - 2, r.fTop - 2, 1, r.height() + 4), paint);
+    canvas->drawRect(GRect::XYWH(r.fRight + 1, r.fTop - 2, 1, r.height() + 4), paint);
+    canvas->drawRect(GRect::XYWH(r.fLeft - 1, r.fTop - 2, r.width() + 2, 1), paint);
+    canvas->drawRect(GRect::XYWH(r.fLeft - 1, r.fBottom + 1, r.width() + 2, 1), paint);
 }
 
 // so we test the polygon code
@@ -78,9 +78,9 @@ static void draw_mode_sample(GCanvas* canvas, const GRect& bounds, GBlendMode mo
     GRect r = bounds;
     r.fBottom = r.fTop + dy;
     canvas->drawConvexPolygon(rect_pts(r, pts), 4, paint.setRGBA(0, 0, 0, 0));
-    r.offset(0, dy);
+    r = r.makeOffset(0, dy);
     canvas->drawConvexPolygon(rect_pts(r, pts), 4, paint.setRGBA(1, 0, 0, 0.5));
-    r.offset(0, dy);
+    r = r.makeOffset(0, dy);
     canvas->drawConvexPolygon(rect_pts(r, pts), 4, paint.setRGBA(1, 0, 0, 1));
 
     // src is blue
@@ -88,9 +88,9 @@ static void draw_mode_sample(GCanvas* canvas, const GRect& bounds, GBlendMode mo
     r = bounds;
     r.fRight = r.fLeft + dx;
     canvas->drawRect(r, paint.setRGBA(0, 0, 0, 0));
-    r.offset(dx, 0);
+    r = r.makeOffset(dx, 0);
     canvas->drawRect(r, paint.setRGBA(0, 0, 1, 0.5));
-    r.offset(dx, 0);
+    r = r.makeOffset(dx, 0);
     canvas->drawRect(r, paint.setRGBA(0, 0, 1, 1));
 }
 
@@ -104,7 +104,7 @@ static void draw_blendmodes(GCanvas* canvas) {
     float y = margin;
     for (int i = 0; i < 12; ++i) {
         GBlendMode mode = static_cast<GBlendMode>((i + 1) % 12);
-        draw_mode_sample(canvas, GRect::MakeXYWH(x, y, W, H), mode);
+        draw_mode_sample(canvas, GRect::XYWH(x, y, W, H), mode);
         if (i % 4 == 3) {
             y += H + margin;
             x = margin;

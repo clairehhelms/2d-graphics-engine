@@ -1,3 +1,7 @@
+/*
+ *  Copyright 2022 <Claire Helms>
+ */
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -226,7 +230,7 @@ GRect GPath::bounds() const
     float B = 0;
     if (this->countPoints() == 0)
     {
-        return GRect::MakeLTRB(0, 0, 0, 0);
+        return GRect::LTRB(0, 0, 0, 0);
     }
     for (GPoint p : this->fPts)
     {
@@ -235,7 +239,7 @@ GRect GPath::bounds() const
         T = std::min(T, p.fY);
         B = std::max(B, p.fY);
     }
-    return GRect::MakeLTRB(L, T, R, B);
+    return GRect::LTRB(L, T, R, B);
 };
 
 void GPath::transform(const GMatrix &m)

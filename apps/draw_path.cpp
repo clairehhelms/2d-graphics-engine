@@ -72,8 +72,8 @@ public:
         if (ctrCount == 2) {
             fPtCount = 8;
             fCtrCount = 2;
-            set_rect_pts(fPts, GRect::MakeXYWH(100, 100, 200, 150));
-            set_rect_pts(fPts + 4, GRect::MakeXYWH(150, 150, 100, 50));
+            set_rect_pts(fPts, GRect::XYWH(100, 100, 200, 150));
+            set_rect_pts(fPts + 4, GRect::XYWH(150, 150, 100, 50));
             fCtrs[0] = { 4, &fPts[0] };
             fCtrs[1] = { 4, &fPts[4] };
         } else if (ctrCount == 1) {
@@ -99,7 +99,7 @@ public:
     void drawHilite(GCanvas* canvas) override {
         GPaint p;
         for (int i = 0; i < fPtCount; ++i) {
-            canvas->drawRect(GRect::MakeXYWH(fPts[i].x() - 2, fPts[i].y() - 2, 5, 5), p);
+            canvas->drawRect(GRect::XYWH(fPts[i].x() - 2, fPts[i].y() - 2, 5, 5), p);
         }
         int base = 0;
         for (int j = 0; j < fCtrCount; ++j) {

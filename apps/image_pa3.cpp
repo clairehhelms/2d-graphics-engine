@@ -67,25 +67,25 @@ static void draw_checker(GCanvas* canvas) {
     GPaint paint(&shader);
     
     canvas->clear({ 0.75, 0.75, 0.75, 1 });
-    canvas->drawRect(GRect::MakeXYWH(20, 20, 100, 100), paint);
+    canvas->drawRect(GRect::XYWH(20, 20, 100, 100), paint);
     
     canvas->save();
     canvas->translate(130, 175);
     canvas->rotate(-M_PI/3);
-    canvas->drawRect(GRect::MakeXYWH(20, 20, 100, 100), paint);
+    canvas->drawRect(GRect::XYWH(20, 20, 100, 100), paint);
     canvas->restore();
     
     canvas->save();
     canvas->translate(10, 160);
     canvas->scale(0.5, 0.5);
-    canvas->drawRect(GRect::MakeXYWH(20, 20, 200, 200), paint);
+    canvas->drawRect(GRect::XYWH(20, 20, 200, 200), paint);
     canvas->restore();
     
     CheckerShader shader2(150,
                           GPixel_PackARGB(0x44, 0x44, 0, 0),
                           GPixel_PackARGB(0x44, 0, 0, 0x44));
     paint.setShader(&shader2);
-    canvas->drawRect(GRect::MakeXYWH(0, 0, 300, 300), paint);
+    canvas->drawRect(GRect::XYWH(0, 0, 300, 300), paint);
 }
 
 static void draw_poly_rotate(GCanvas* canvas) {
@@ -166,7 +166,7 @@ static void draw_bitmaps_hole(GCanvas* canvas) {
     bm0.readFromFile("apps/spock.png");
     bm1.readFromFile("apps/oldwell.png");
 
-    const GRect r = GRect::MakeWH(300, 300);
+    const GRect r = GRect::WH(300, 300);
     draw_bitmap(canvas, r, bm0, GBlendMode::kSrc);
     draw_bitmap(canvas, r, bm1, GBlendMode::kDstIn);
 }
@@ -208,7 +208,7 @@ static void draw_mode_sample2(GCanvas* canvas, const GRect& bounds, GBlendMode m
 
 static void draw_all_blendmodes(GCanvas* canvas, void (*proc)(GCanvas*, const GRect&, GBlendMode)) {
     canvas->clear({1,1,1,1});
-    const GRect r = GRect::MakeWH(100, 100);
+    const GRect r = GRect::WH(100, 100);
     
     const float W = 100;
     const float H = 100;

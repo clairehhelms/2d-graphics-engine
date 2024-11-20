@@ -106,7 +106,7 @@ static void draw_lion_head(GCanvas* canvas) {
 static void draw_grad(GCanvas* canvas) {
     canvas->scale(2, 2);
 
-    GRect r = GRect::MakeXYWH(10, 15, 100, 75);
+    GRect r = GRect::XYWH(10, 15, 100, 75);
     const GColor colors[] = {
         {1,0,0,1}, {0,1,0,1}, {0,0,1,1},
     };
@@ -158,24 +158,24 @@ static void draw_graphs2(GCanvas* canvas) {
 
     float min = -M_PI;
     float max =  M_PI;
-    canvas->save();
-    canvas->translate(128, 128);
-    canvas->scale(40, 60);
-    graph_path(&path, 30, min, max, [](float x) { return sinf(x); });
+    // canvas->save();
+    // canvas->translate(128, 128);
+    // canvas->scale(40, 60);
+    // graph_path(&path, 30, min, max, [](float x) { return sinf(x); });
     auto sh = GCreateLinearGradient({min, 0}, {max, 0}, {0, 0, 1, 1}, {1, 0, 0, 1});
-    canvas->drawPath(path, GPaint(sh.get()));
-    canvas->restore();
+    // canvas->drawPath(path, GPaint(sh.get()));
+    // canvas->restore();
 
-    GColor color = {0, 0.5f, 0, 1};
-    min = -5*M_PI;
-    max =  5*M_PI;
-    canvas->save();
-    canvas->translate(128, 40);
-    canvas->scale(10, 40);
-    graph_path(&path, 70, min, max, [](float x) { return sinf(x)/x; });
-    sh = GCreateLinearGradient({0, -1.f}, {0, 1.f}, &color, 1);
-    canvas->drawPath(path, GPaint(sh.get()));
-    canvas->restore();
+    // GColor color = {0, 0.5f, 0, 1};
+    // min = -5*M_PI;
+    // max =  5*M_PI;
+    // canvas->save();
+    // canvas->translate(128, 40);
+    // canvas->scale(10, 40);
+    // graph_path(&path, 70, min, max, [](float x) { return sinf(x)/x; });
+    // sh = GCreateLinearGradient({0, -1.f}, {0, 1.f}, &color, 1);
+    // canvas->drawPath(path, GPaint(sh.get()));
+    // canvas->restore();
 
     min = 0;
     max = 1;

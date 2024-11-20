@@ -2,10 +2,9 @@
 #define GPath_DEFINED
 
 #include <vector>
+#include "GMatrix.h"
 #include "GPoint.h"
 #include "GRect.h"
-
-class GMatrix;
 
 class GPath {
 public:
@@ -105,6 +104,10 @@ public:
      *  Transform the path in-place by the specified matrix.
      */
     void transform(const GMatrix&);
+
+    void offset(float dx, float dy) {
+        this->transform(GMatrix::Translate(dx, dy));
+    }
 
     enum Verb {
         kMove,  // returns pts[0] from Iter

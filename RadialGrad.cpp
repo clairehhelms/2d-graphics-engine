@@ -1,3 +1,8 @@
+/*
+ *  Copyright 2022 <Claire Helms>
+ */
+
+
 #include "GShader.h"
 #include "GMatrix.h"
 #include "GBitmap.h"
@@ -138,7 +143,7 @@ private:
     GShader::TileMode fTm;
 };
 
-// std::unique_ptr<GShader> GCreateLinearGradient(GPoint center, GColor colors[], int count, float radius, GShader::TileMode mode)
-// {
-//     return std::unique_ptr<GShader>(new RadialGrad(center, colors, count, radius, mode));
-// }
+std::unique_ptr<GShader> GCreateLinearGradient(GPoint center, GColor colors[], int count, float radius, GShader::TileMode mode)
+{
+    return std::unique_ptr<GShader>(new RadialGrad(center, colors, count, radius, mode));
+}

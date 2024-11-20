@@ -1,7 +1,5 @@
 /**
  *  Copyright 2013 Mike Reed
- *
- *  COMP 590 -- Fall 2013
  */
 
 #ifndef GTime_DEFINED

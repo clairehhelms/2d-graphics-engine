@@ -1,3 +1,8 @@
+/*
+ *  Copyright 2022 <Claire Helms>
+ */
+
+
 #include "GShader.h"
 #include "GPixel.h"
 #include "GColor.h"

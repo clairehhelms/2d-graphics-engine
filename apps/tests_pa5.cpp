@@ -34,7 +34,7 @@ static void test_path_circle(GTestStats* stats) {
     for (GPath::Direction dir : { GPath::kCW_Direction, GPath::kCCW_Direction }) {
         p.reset();
         p.addCircle({10, 10}, 10, dir);
-        EXPECT_TRUE(stats, GRect::MakeWH(20, 20) == p.bounds());
+        EXPECT_TRUE(stats, GRect::WH(20, 20) == p.bounds());
     }
 }
 
@@ -42,7 +42,7 @@ static void test_path_transform2(GTestStats* stats) {
     GPath p;
 
     p.moveTo(10, 10).lineTo(20, 10).lineTo(20, 40).quadTo(10, 40, 10, 10);
-    EXPECT_TRUE(stats, p.bounds() == GRect::MakeLTRB(10, 10, 20, 40));
+    EXPECT_TRUE(stats, p.bounds() == GRect::LTRB(10, 10, 20, 40));
 
     GMatrix mx = GMatrix::Scale(2, 3);
 

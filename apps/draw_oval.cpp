@@ -9,7 +9,7 @@ class OvalShape : public Shape {
     GColor  fColor;
 public:
     OvalShape() {
-        fRect = GRect::MakeLTRB(40, 70, 200, 200);
+        fRect = GRect::LTRB(40, 70, 200, 200);
         fColor = { 1, 0, 0, 1 };
     }
 

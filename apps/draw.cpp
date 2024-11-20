@@ -40,8 +40,8 @@ static GColor rand_color(bool forceOpaque = false) {
 }
 
 static GRect make_from_pts(const GPoint& p0, const GPoint& p1) {
-    return GRect::MakeLTRB(std::min(p0.fX, p1.fX), std::min(p0.fY, p1.fY),
-                           std::max(p0.fX, p1.fX), std::max(p0.fY, p1.fY));
+    return GRect::LTRB(std::min(p0.fX, p1.fX), std::min(p0.fY, p1.fY),
+                       std::max(p0.fX, p1.fX), std::max(p0.fY, p1.fY));
 }
 
 static bool contains(const GRect& rect, float x, float y) {
@@ -56,24 +56,24 @@ static bool hit_test(float x0, float y0, float x1, float y1) {
 
 static bool in_resize_corner(const GRect& r, float x, float y, GPoint* anchor) {
     if (hit_test(r.left(), r.top(), x, y)) {
-        anchor->set(r.right(), r.bottom());
+        *anchor = {r.right(), r.bottom()};
         return true;
     } else if (hit_test(r.right(), r.top(), x, y)) {
-        anchor->set(r.left(), r.bottom());
+        *anchor = {r.left(), r.bottom()};
         return true;
     } else if (hit_test(r.right(), r.bottom(), x, y)) {
-        anchor->set(r.left(), r.top());
+        *anchor = {r.left(), r.top()};
         return true;
     } else if (hit_test(r.left(), r.bottom(), x, y)) {
-        anchor->set(r.right(), r.top());
+        *anchor = {r.right(), r.top()};
         return true;
     }
     return false;
 }
 
 static void draw_corner(GCanvas* canvas, const GColor& c, float x, float y, float dx, float dy) {
-    canvas->fillRect(make_from_pts(GPoint::Make(x, y - 1), GPoint::Make(x + dx, y + 1)), c);
-    canvas->fillRect(make_from_pts(GPoint::Make(x - 1, y), GPoint::Make(x + 1, y + dy)), c);
+    canvas->fillRect(make_from_pts({x,     y - 1}, {x + dx, y + 1}), c);
+    canvas->fillRect(make_from_pts({x - 1, y},     {x + 1,  y + dy}), c);
 }
 
 static void constrain_color(GColor* c) {
@@ -84,7 +84,7 @@ static void constrain_color(GColor* c) {
 }
 
 static void draw_point(GCanvas* canvas, GPoint p) {
-    canvas->drawRect(GRect::MakeLTRB(p.fX - 2, p.fY - 2, p.fX + 3, p.fY + 3), GPaint());
+    canvas->drawRect(GRect::LTRB(p.fX - 2, p.fY - 2, p.fX + 3, p.fY + 3), GPaint());
 }
 
 static void draw_line(GCanvas* canvas, GPoint p0, GPoint p1, GColor c, float width) {
@@ -98,15 +98,15 @@ static void draw_line(GCanvas* canvas, GPoint p0, GPoint p1, GColor c, float wid
 }
 
 static GRect make_rect(GPoint a, GPoint b) {
-    return GRect::MakeLTRB(std::min(a.fX, b.fX),
-                           std::min(a.fY, b.fY),
-                           std::max(a.fX, b.fX),
-                           std::max(a.fY, b.fY));
+    return GRect::LTRB(std::min(a.fX, b.fX),
+                       std::min(a.fY, b.fY),
+                       std::max(a.fX, b.fX),
+                       std::max(a.fY, b.fY));
 }
 
 static void stroke_rect(GCanvas* canvas, const GRect& r, GColor c, float width) {
     auto inset = [](const GRect& r, float dx, float dy) {
-        return GRect::MakeLTRB(
+        return GRect::LTRB(
                r.fLeft + dx, r.fTop + dy, r.fRight - dx, r.fBottom - dy);
     };
     GPath path;
@@ -312,7 +312,7 @@ protected:
 class RectShape : public Shape {
 public:
     RectShape(GColor c) : fColor(c) {
-        fRect = GRect::MakeXYWH(0, 0, 0, 0);
+        fRect = GRect::XYWH(0, 0, 0, 0);
     }
 
     void onDraw(GCanvas* canvas, const GPaint& paint) override {
@@ -332,14 +332,14 @@ private:
 class BitmapShape : public Shape {
 public:
     BitmapShape(const GBitmap& bm) : fBM(bm) {
-        fRect = GRect::MakeXYWH(20, 20, 150, 150);
+        fRect = GRect::XYWH(20, 20, 150, 150);
     }
 
     void onDraw(GCanvas* canvas, const GPaint&) override {
         GPaint paint;
 #if 0
-        GMatrix inv, m = GMatrix::MakeScale(fRect.width() / fBM.width(),
-                                            fRect.height() / fBM.height());
+        GMatrix inv, m = GMatrix::Scale(fRect.width() / fBM.width(),
+                                        fRect.height() / fBM.height());
         m.postTranslate(fRect.left(), fRect.top());
         if (m.invert(&inv)) {
             auto sh = GCreateBitmapShader(fBM, inv);
@@ -354,7 +354,7 @@ public:
         canvas->translate(fRect.left(), fRect.top());
         canvas->scale(fRect.width() / fBM.width(),
                       fRect.height() / fBM.height());
-        canvas->drawRect(GRect::MakeWH(fBM.width(), fBM.height()), paint);
+        canvas->drawRect(GRect::WH(fBM.width(), fBM.height()), paint);
         canvas->restore();
 #endif
     }
@@ -375,7 +375,7 @@ static void make_regular_poly(GPoint pts[], int count, float cx, float cy, float
     const float deltaAngle = M_PI * 2 / count;
 
     for (int i = 0; i < count; ++i) {
-        pts[i].set(cx + cos(angle) * rx, cy + sin(angle) * ry);
+        pts[i] = {cx + cos(angle) * rx, cy + sin(angle) * ry};
         angle += deltaAngle;
     }
 }
@@ -383,7 +383,7 @@ static void make_regular_poly(GPoint pts[], int count, float cx, float cy, float
 class ConvexShape : public Shape {
 public:
     ConvexShape(GColor c, int sides) : fPaint(c), fN(sides) {
-        fBounds.setXYWH(100, 100, 150, 150);
+        fBounds = GRect::XYWH(100, 100, 150, 150);
     }
 
     void onDraw(GCanvas* canvas, const GPaint& paint) override {
@@ -472,7 +472,7 @@ public:
     
 protected:
     void onDraw(GCanvas* canvas) override {
-        canvas->fillRect(GRect::MakeXYWH(0, 0, 10000, 10000), fBGColor);
+        canvas->fillRect(GRect::XYWH(0, 0, 10000, 10000), fBGColor);
 
         for (int i = 0; i < fList.size(); ++i) {
             fList[i]->draw(canvas);

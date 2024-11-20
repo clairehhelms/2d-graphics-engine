@@ -3,10 +3,10 @@
 */
 
 static void to_quad(const GRect& r, GPoint quad[4]) {
-    quad[0].set(r.left(),  r.top());
-    quad[1].set(r.right(), r.top());
-    quad[2].set(r.right(), r.bottom());
-    quad[3].set(r.left(),  r.bottom());
+    quad[0] = {r.left(),  r.top()};
+    quad[1] = {r.right(), r.top()};
+    quad[2] = {r.right(), r.bottom()};
+    quad[3] = {r.left(),  r.bottom()};
 }
 
 class PolyRectsBench : public GBenchmark {
@@ -19,7 +19,7 @@ public:
     GISize size() const override { return { W, H }; }
     void draw(GCanvas* canvas) override {
         const int N = 500;
-        const GRect bounds = GRect::MakeLTRB(-10, -10, W + 10, H + 10);
+        const GRect bounds = GRect::LTRB(-10, -10, W + 10, H + 10);
         GRandom rand;
         for (int i = 0; i < N; ++i) {
             GColor color = rand_color(rand, fForceOpaque);
@@ -34,7 +34,7 @@ static void tesselate_circle(GPoint pts[], int count, float cx, float cy, float 
     assert(count >= 3);
     for (int i = 0; i < count; ++i) {
         float angle = i * M_PI * 2 / count;
-        pts[i].set(cos(angle) * rad + cx, sin(angle) * rad + cy);
+        pts[i] = {cos(angle) * rad + cx, sin(angle) * rad + cy};
     }
 }
 
@@ -68,13 +68,18 @@ public:
     const char* name() const override { return fName; }
     GISize size() const override { return { W, H }; }
     void draw(GCanvas* canvas) override {
-        const GRect r = GRect::MakeWH(W, H);
+        const GRect r = GRect::WH(W, H);
         GPaint paint(fColor);
+        GRandom rand;
 
+        const bool vary = fColor.a > 0 && fColor.a < 1;
         const int N = 50;
         for (int m = 0; m < 12; ++m) {
             paint.setBlendMode(static_cast<GBlendMode>(m));
             for (int i = 0; i < N; ++i) {
+                if (vary) {
+                    paint.setAlpha(rand.nextF());
+                }
                 canvas->drawRect(r, paint);
             }
         }

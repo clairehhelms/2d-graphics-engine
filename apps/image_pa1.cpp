@@ -11,6 +11,7 @@
 #include "GRect.h"
 #include <string>
 
+
 static void draw_solid_ramp(GCanvas* canvas) {
     const float c = 1.0 / 512;
     const float d = 1.0 / 256;
@@ -32,15 +33,15 @@ static void draw_solid_ramp(GCanvas* canvas) {
         GColor color = rec[y].fC0;
         GColor delta = rec[y].fDC;
         for (int x = 0; x < 256; x++) {
-            const GRect rect = GRect::MakeXYWH(x, y * 28, 1, 28);
-            canvas->fillRect(rect, color);
+            const GRect rect = GRect::XYWH(x, y * 28, 1, 28);
+            canvas->drawRect(rect, color);
             color += delta;
         }
     }
 }
 
 static void draw_blend_ramp(GCanvas* canvas, const GColor& bg) {
-    GRect rect = GRect::MakeXYWH(-25, -25, 70, 70);
+    GRect rect = GRect::XYWH(-25, -25, 70, 70);
 
     int delta = 8;
     for (int i = 0; i < 200; i += delta) {
@@ -48,8 +49,8 @@ static void draw_blend_ramp(GCanvas* canvas, const GColor& bg) {
         float g = fabs(cos(i/40.0));
         float b = fabs(sin(i/50.0));
         GColor color = {r, g, b, 0.3f};
-        canvas->fillRect(rect, color);
-        rect.offset(delta, delta);
+        canvas->drawRect(rect, color);
+        rect = rect.makeOffset(delta, delta);
     }
 }
 
@@ -70,13 +71,13 @@ static void graph_rects(GCanvas* canvas, const Graph& g,
         float y = func(x);
         float sx = x * g.fScale.fX + g.fOffset.fX;
         float sy = -y * g.fScale.fY + g.fOffset.fY;
-        GRect r = GRect::MakeLTRB(sx - halfwidth, sy, sx + halfwidth, y0);
+        GRect r = GRect::LTRB(sx - halfwidth, sy, sx + halfwidth, y0);
         if (r.height() < 0) {
             std::swap(r.fTop, r.fBottom);
         }
         r.fLeft += 0.5;
         r.fRight -= 0.5f;
-        canvas->fillRect(r, color((x - g.fMin) / (g.fMax - g.fMin)));
+        canvas->drawRect(r, color((x - g.fMin) / (g.fMax - g.fMin)));
         x += dx;
     }
 }

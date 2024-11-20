@@ -107,7 +107,7 @@ bool GWindow::handleEvent(const SDL_Event& evt) {
             if (fClick) {
                 delete fClick;
             }
-            fClick = this->onFindClickHandler(GPoint::Make(evt.button.x, evt.button.y));
+            fClick = this->onFindClickHandler({evt.button.x, evt.button.y});
             if (fClick) {
                 return true;
             }
@@ -125,7 +125,7 @@ bool GWindow::handleEvent(const SDL_Event& evt) {
             if (fClick) {
                 fClick->fState = GClick::kMove_State;
                 fClick->fPrev = fClick->fCurr;
-                fClick->fCurr.set(evt.motion.x, evt.motion.y);
+                fClick->fCurr = {evt.motion.x, evt.motion.y};
                 fClick->callback();
                 return true;
             }

@@ -7,7 +7,9 @@
 class GradientBench : public ShaderBench {
 public:
     GradientBench(const GColor colors[], int count, const char* name,
-                  GShader::TileMode tm = GShader::kClamp) : ShaderBench(name, 20) {
+                  GShader::TileMode tm = GShader::TileMode::kClamp)
+        : ShaderBench(name, 20)
+    {
         fShader = GCreateLinearGradient({0, 0}, GPoint{W, H}, colors, count, tm);
     }
 };
@@ -38,8 +40,8 @@ public:
         }
         if (clip) {
             const auto r = fPath.bounds();
-            fPath.transform(GMatrix::Translate((r.fLeft + r.fRight) * 0.5,
-                                               (r.fTop + r.fBottom) * 0.5));
+            fPath.offset((r.fLeft + r.fRight) * 0.5,
+                         (r.fTop + r.fBottom) * 0.5);
         }
     }
 

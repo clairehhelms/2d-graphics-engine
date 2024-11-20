@@ -43,9 +43,6 @@ bool GBitmap::writeToFile(const char path[]) const {
 
     unsigned err = lodepng_encode32_file(path, pix, this->width(), this->height());
     free(pix);
-    if (err) {
-        printf("-- lodepng_encode32_file failed with %d\n", err);
-    }
     return err == 0;
 }
 
@@ -89,3 +86,5 @@ bool GBitmap::readFromFile(const char path[]) {
     this->setIsOpaque(kCompute_IsOpaque);
     return true;
 }
+
+

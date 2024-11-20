@@ -90,7 +90,7 @@ static void draw_rings(GCanvas* canvas) {
     GPaint paint;
     
     GRandom rand;
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 1; ++i) {
         path = make_ear(10 + rand.nextF() * 400);
         float tx = rand.nextF() * 512;
         float ty = rand.nextF() * 512;
@@ -106,9 +106,9 @@ static void draw_bm_tiling(GCanvas* canvas) {
     GBitmap bm;
     bm.readFromFile("apps/spock.png");
     auto sh = GCreateBitmapShader(bm, m, GShader::kRepeat);
-    canvas->drawRect(GRect::MakeXYWH(0, 0, 512, 250), GPaint(sh.get()));
+    canvas->drawRect(GRect::XYWH(0, 0, 512, 250), GPaint(sh.get()));
     sh = GCreateBitmapShader(bm, m, GShader::kMirror);
-    canvas->drawRect(GRect::MakeXYWH(0, 262, 512, 250), GPaint(sh.get()));
+    canvas->drawRect(GRect::XYWH(0, 262, 512, 250), GPaint(sh.get()));
 }
 
 static void draw_cartman(GCanvas* canvas) {
@@ -149,4 +149,35 @@ static void draw_divided(GCanvas* canvas) {
     draw_cubic(canvas, pivot, tmp1, {0,1,0,1});
     draw_cubic(canvas, pivot, tmp2, {0,0,1,1});
     draw_cubic(canvas, pivot, &tmp2[3], {1,0,0,1});
+}
+
+static void draw_mirror_ramp(GCanvas* canvas) {
+    const GColor colors[] = {
+        {1, 1, 1, 1},
+        {1, 0, 0, 1},
+        {0, 1, 1, 1},
+        {0, 1, 0, 1},
+        {1, 0, 1, 1},
+        {0, 0, 1, 1},
+        {1, 1, 0, 1},
+    };
+    constexpr size_t N = sizeof(colors) / sizeof(colors[0]);
+
+    constexpr int ROWS = 6;
+    float h = 512.f / ROWS;
+    float y = 0;
+    GRandom rand;
+    GPaint paint;
+    GColor c[ROWS+2];
+    for (int i = 0; i < ROWS; ++i) {
+        const int colorCount = i + 2;
+        for (int j = 0; j < colorCount; ++j) {
+            c[j] = colors[rand.nextU() % N];
+        }
+        GRect r = {0, y, 512, y+h};
+        auto sh = GCreateLinearGradient({0, 0}, {256, 0}, c, colorCount, GShader::kMirror);
+        paint.setShader(sh.get());
+        canvas->drawRect(r, paint);
+        y += h;
+    }
 }
