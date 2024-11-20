@@ -2,7 +2,6 @@
  *  Copyright 2022 <Claire Helms>
  */
 
-
 #include "GShader.h"
 #include "GMatrix.h"
 #include "GBitmap.h"

@@ -90,7 +90,7 @@ static void draw_rings(GCanvas* canvas) {
     GPaint paint;
     
     GRandom rand;
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 20; ++i) {
         path = make_ear(10 + rand.nextF() * 400);
         float tx = rand.nextF() * 512;
         float ty = rand.nextF() * 512;

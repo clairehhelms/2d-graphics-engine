@@ -69,59 +69,6 @@ public:
      */
     virtual void drawPath(const GPath&, const GPaint&) = 0;
 
-    /**
-     *  Draw a mesh of triangles, with optional colors and/or texture-coordinates at each vertex.
-     *
-     *  The triangles are specified by successive triples of indices.
-     *      int n = 0;
-     *      for (i = 0; i < count; ++i) {
-     *          point0 = vertx[indices[n+0]]
-     *          point1 = verts[indices[n+1]]
-     *          point2 = verts[indices[n+2]]
-     *          ...
-     *          n += 3
-     *      }
-     *
-     *  If colors is not null, then each vertex has an associated color, to be interpolated
-     *  across the triangle. The colors are referenced in the same way as the verts.
-     *          color0 = colors[indices[n+0]]
-     *          color1 = colors[indices[n+1]]
-     *          color2 = colors[indices[n+2]]
-     *
-     *  If texs is not null, then each vertex has an associated texture coordinate, to be used
-     *  to specify a coordinate in the paint's shader's space. If there is no shader on the
-     *  paint, then texs[] should be ignored. It is referenced in the same way as verts and colors.
-     *          texs0 = texs[indices[n+0]]
-     *          texs1 = texs[indices[n+1]]
-     *          texs2 = texs[indices[n+2]]
-     *
-     *  If both colors and texs[] are specified, then at each pixel their values are multiplied
-     *  together, component by component.
-     */
-    virtual void drawMesh(const GPoint verts[], const GColor colors[], const GPoint texs[],
-                          int count, const int indices[], const GPaint&) = 0;
-
-    /**
-     *  Draw the quad, with optional color and/or texture coordinate at each corner. Tesselate
-     *  the quad based on "level":
-     *      level == 0 --> 1 quad  -->  2 triangles
-     *      level == 1 --> 4 quads -->  8 triangles
-     *      level == 2 --> 9 quads --> 18 triangles
-     *      ...
-     *  The 4 corners of the quad are specified in this order:
-     *      top-left --> top-right --> bottom-right --> bottom-left
-     *  Each quad is triangulated on the diagonal top-right --> bottom-left
-     *      0---1
-     *      |  /|
-     *      | / |
-     *      |/  |
-     *      3---2
-     *
-     *  colors and/or texs can be null. The resulting triangles should be passed to drawMesh(...).
-     */
-    virtual void drawQuad(const GPoint verts[4], const GColor colors[4], const GPoint texs[4],
-                          int level, const GPaint&) = 0;
-
     // Helpers
 
     void translate(float x, float y) {

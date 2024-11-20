@@ -37,9 +37,12 @@ struct Edge
             return false;
         }
         fSlope = (p1.fX - p0.fX) / (p1.fY - p0.fY);
-        fCurrX = p0.fX + fSlope * (p1.fY - p0.fY + 0.5f);
+        // if (fSlope == 0) {
+        //     return false;
+        // }
+        fCurrX = p0.fX + fSlope * (y0 - p0.fY + 0.5f);
         fY = GRoundToInt(y0);
-        fLastY = GRoundToInt(p1.fY - 1);
+        fLastY = GRoundToInt(y1 - 1);
         if (fY == fLastY) {
             return false;
         }

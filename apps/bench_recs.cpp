@@ -72,7 +72,6 @@ public:
 #include "bench_pa3.inc"
 #include "bench_pa4.inc"
 #include "bench_pa5.inc"
-#include "bench_pa6.inc"
 
 const GBenchmark::Factory gBenchFactories[] {
     []() -> GBenchmark* { return new RectsBench(false); },
@@ -129,31 +128,6 @@ const GBenchmark::Factory gBenchFactories[] {
         const GColor colors[] = {{ 1, 0, 0, 1 }, { 0, 1, 1, 1 }};
         return new GradientBench(colors, 2, "gradient_2_mirror", GShader::kMirror);
     },
-
-    // extra benches for tiling bitmaps
-    []() -> GBenchmark* { return new BitmapBench("apps/spock.png", "bitmap_repeat",
-                                                 GShader::kRepeat); },
-    []() -> GBenchmark* { return new BitmapBench("apps/spock.png", "bitmap_mirror",
-                                                 GShader::kMirror); },
-
-    // pa6
-    []() -> GBenchmark* {
-        const GPoint verts[] = {{0, 0}, {100, 0}, {100, 100}, {0, 100}};
-        const GColor colors[] = {{ 1,1,0,0 }, { 1,0,1,0 }, {1,0,0,1}, {1,1,1,1}};
-        const int indices[] = { 0, 1, 2,  2, 3, 0 };
-        return new MeshBench(verts, colors, nullptr, 2, indices, "mesh_colors");
-     },
-     []() -> GBenchmark* {
-        const GPoint verts[] = {{0, 0}, {100, 0}, {100, 100}, {0, 100}};
-        const int indices[] = { 0, 1, 2,  2, 3, 0 };
-        return new MeshBench(verts, nullptr, verts, 2, indices, "mesh_texs");
-     },
-     []() -> GBenchmark* {
-        const GPoint verts[] = {{0, 0}, {100, 0}, {100, 100}, {0, 100}};
-        const GColor colors[] = {{ 1,1,0,0 }, { 1,0,1,0 }, {1,0,0,1}, {1,1,1,1}};
-        const int indices[] = { 0, 1, 2,  2, 3, 0 };
-        return new MeshBench(verts, colors, verts, 2, indices, "mesh_both");
-     },
 
     nullptr,
 };

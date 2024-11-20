@@ -58,8 +58,6 @@ std::unique_ptr<GShader> GCreateBitmapShader(const GBitmap&, const GMatrix& loca
  *
  *  If count < 1, this should return nullptr.
  */
-std::unique_ptr<GShader> GCreateLinearGradient(GPoint center, GColor[], int count,
-                                               float radius, GShader::TileMode mode = GShader::kClamp);
 std::unique_ptr<GShader> GCreateLinearGradient(GPoint p0, GPoint p1, const GColor[], int count,
                                                GShader::TileMode = GShader::kClamp);
 

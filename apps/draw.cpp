@@ -72,8 +72,8 @@ static bool in_resize_corner(const GRect& r, float x, float y, GPoint* anchor) {
 }
 
 static void draw_corner(GCanvas* canvas, const GColor& c, float x, float y, float dx, float dy) {
-    canvas->fillRect(make_from_pts({x,     y - 1}, {x + dx, y + 1}), c);
-    canvas->fillRect(make_from_pts({x - 1, y},     {x + 1,  y + dy}), c);
+    canvas->fillRect(make_from_pts({x, y - 1}, {x + dx, y + 1}), c);
+    canvas->fillRect(make_from_pts({x - 1, y}, {x + 1, y + dy}), c);
 }
 
 static void constrain_color(GColor* c) {
@@ -129,6 +129,7 @@ public:
     virtual ~Shape() {}
     virtual GRect getRect() = 0;
     virtual void setRect(const GRect&) {}
+    virtual bool animates() const { return false; }
 
     GColor getColor() {
         if (fShaderType == kGradient_ShaderType) {
@@ -306,8 +307,6 @@ protected:
 #include "draw_quad.cpp"
 #include "draw_cubic.cpp"
 #include "draw_oval.cpp"
-#include "draw_mesh.cpp"
-#include "draw_txtri.cpp"
 
 class RectShape : public Shape {
 public:
@@ -410,19 +409,7 @@ private:
     GRect   fBounds;
 };
 
-extern Shape* MeshShape_Factory();
-
-static Shape* cons_up_shape(int index) {
-    if (index < 0) {
-        if (index == -1) {
-            GBitmap bm;
-            if (bm.readFromFile("apps/spock.png")) {
-                return new TxTriShape(bm);
-            }
-        }
-        return nullptr;
-    }
-
+static Shape* cons_up_shape(unsigned index) {
     const char* names[] = {
         "apps/spock.png", "apps/oldwell.png",
     };
@@ -451,9 +438,6 @@ static Shape* cons_up_shape(int index) {
     if (index == 7) {
         return new OvalShape;
     }
-    if (index == 8) {
-        return MeshShape_Factory();
-    }
     return nullptr;
 }
 
@@ -472,7 +456,7 @@ public:
     
 protected:
     void onDraw(GCanvas* canvas) override {
-        canvas->fillRect(GRect::XYWH(0, 0, 10000, 10000), fBGColor);
+        canvas->fillRect(GRect::WH(10000, 10000), fBGColor);
 
         for (int i = 0; i < fList.size(); ++i) {
             fList[i]->draw(canvas);

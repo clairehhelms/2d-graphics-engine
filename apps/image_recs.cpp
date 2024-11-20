@@ -9,7 +9,6 @@
 #include "image_pa3.cpp"
 #include "image_pa4.cpp"
 #include "image_pa5.cpp"
-#include "image_pa6.cpp"
 
 const GDrawRec gDrawRecs[] = {
     { draw_solid_ramp,  256, 7*28,  "solid_ramp",   1   },
@@ -40,13 +39,6 @@ const GDrawRec gDrawRecs[] = {
     { draw_cartman,     512, 512,   "cartman", 5 },
     { draw_divided,     512, 512,   "divided", 5 },
     { draw_mirror_ramp, 512, 512,   "mirror_ramp", 5 },
-
-    { draw_tri,         512, 512,   "tri_color",   6 },
-    { draw_tri2,        512, 512,   "tri_texture", 6 },
-    { mesh_1,           512, 512,   "sweep_mesh",  6 },
-    { mesh_3,           512, 512,   "both_mesh",   6 },
-    { spock_quad,       512, 512,   "spock_quad",  6 },
-    { color_quad,       512, 512,   "color_quad",  6 },
 
     { nullptr, 0, 0, nullptr },
 };

@@ -17,9 +17,6 @@
 #include "GMath.h"
 #include <algorithm>
 #include <vector>
-#include "TextureShader.cpp"
-#include "ColorShader.cpp"
-#include "BothShader.cpp"
 
 class MyCanvas : public GCanvas
 {
@@ -28,174 +25,6 @@ public:
     {
         GMatrix starter_mx = GMatrix();
         stack.push_back(starter_mx);
-    }
-
-    virtual void drawMesh(const GPoint verts[], const GColor colors[], const GPoint texs[],
-                          int count, const int indices[], const GPaint &paint) override
-    {
-        int n = 0;
-        GPoint p0, p1, p2, t0, t1, t2;
-        GColor c0, c1, c2;
-        for (int i = 0; i < count; i++)
-        {
-            p0 = verts[indices[n]];
-            p1 = verts[indices[n + 1]];
-            p2 = verts[indices[n + 2]];
-            GPoint pts[] = {p0, p1, p2};
-
-            if (colors && texs)
-            {
-                c0 = colors[indices[n]];
-                c1 = colors[indices[n + 1]];
-                c2 = colors[indices[n + 2]];
-                ColorShader *s1 = new ColorShader(p0, p1, p2, c0, c1, c2);
-
-                t0 = texs[indices[n]];
-                t1 = texs[indices[n + 1]];
-                t2 = texs[indices[n + 2]];
-
-                GMatrix M1, M2, invM1, Conkittycat;
-                M1 = GMatrix(t1.x() - t0.x(), t2.x() - t0.x(), t0.x(), t1.y() - t0.y(), t2.y() - t0.y(), t0.y());
-                M2 = GMatrix(p1.x() - p0.x(), p2.x() - p0.x(), p0.x(), p1.y() - p0.y(), p2.y() - p0.y(), p0.y());
-
-                M1.invert(&invM1);
-                Conkittycat = GMatrix::Concat(M2, invM1);
-                TextureShader *s0 = new TextureShader(paint.getShader(), Conkittycat);
-
-                BothShader *sBoth = new BothShader(s0, s1);
-                drawConvexPolygon(pts, 3, GPaint(sBoth));
-            }
-            else if (colors)
-            {
-                c0 = colors[indices[n]];
-                c1 = colors[indices[n + 1]];
-                c2 = colors[indices[n + 2]];
-
-                GMatrix M1, M2, invM1, Conkittycat;
-                M1 = GMatrix(t1.x() - t0.x(), t2.x() - t0.x(), t0.x(), t1.y() - t0.y(), t2.y() - t0.y(), t0.y());
-                M2 = GMatrix(p1.x() - p0.x(), p2.x() - p0.x(), p0.x(), p1.y() - p0.y(), p2.y() - p0.y(), p0.y());
-
-                ColorShader *cshader = new ColorShader(p0, p1, p2, c0, c1, c2);
-
-                drawConvexPolygon(pts, 3, GPaint(cshader));
-            }
-            else if (texs)
-            {
-                t0 = texs[indices[n]];
-                t1 = texs[indices[n + 1]];
-                t2 = texs[indices[n + 2]];
-
-                GMatrix M1, M2, invM1, Conkittycat;
-                M1 = GMatrix(t1.x() - t0.x(), t2.x() - t0.x(), t0.x(), t1.y() - t0.y(), t2.y() - t0.y(), t0.y());
-                M2 = GMatrix(p1.x() - p0.x(), p2.x() - p0.x(), p0.x(), p1.y() - p0.y(), p2.y() - p0.y(), p0.y());
-
-                M1.invert(&invM1);
-                Conkittycat = GMatrix::Concat(M2, invM1);
-
-                TextureShader *tshader = new TextureShader(paint.getShader(), Conkittycat);
-                drawConvexPolygon(pts, 3, GPaint(tshader));
-            }
-            n += 3;
-        }
-    }
-
-    // *           0---1
-    //      *      |  /|
-    //      *      | / |
-    //      *      |/  |
-    //      *      3---2
-    virtual void drawQuad(const GPoint verts[4], const GColor colors[4], const GPoint texs[4],
-                          int level, const GPaint &paint) override
-    {
-        // # of levels > level==2 == x= (level+1)^2; triangles = x*2
-        // bounds
-        float uTop, uBottom, vLeft, vRight;
-        // storing this bc it's used a bit later
-        int levelplus = level + 1;
-        // storage
-        GPoint vs[4];
-        GColor cs[4];
-        GPoint ts[4];
-        // order of points of triangleee
-        int indicies[] = {0, 1, 3, 1, 2, 3};
-
-        GColor *cool;
-        GPoint *texty;
-
-        for (int y = 0; y < level + 1; y++)
-        { // row
-            for (int x = 0; x < level + 1; x++)
-            { // column
-                // finding the current u and v bounds where we are
-                uTop = (float)(y) / (float)(level + 1);
-                uBottom = (float)(y + 1) / (float)(level + 1);
-                vLeft = (float)(x) / (float)(level + 1);
-                vRight = (float)(x + 1) / (float)(level + 1);
-
-                // finding the vector points inside these bounds with the original vector points given
-                vs[0] = createQuadPoint(verts, uTop, vLeft);
-                vs[1] = createQuadPoint(verts, uBottom, vLeft);
-                vs[2] = createQuadPoint(verts, uBottom, vRight);
-                vs[3] = createQuadPoint(verts, uTop, vRight);
-
-                // this is how we can be clever and pass null when we don't have colors or textures
-                cool = nullptr;
-                texty = nullptr;
-
-                if (colors != nullptr)
-                {
-                    // std::cout << colors[2].r << std::endl;v
-                    // find the color here
-                    // unfortunately we can't store these becasue we don't know if they exist lol
-                    cs[0] = createQuadColor(colors, uTop, vLeft);
-                    cs[1] = createQuadColor(colors, uBottom, vLeft);
-                    cs[2] = createQuadColor(colors, uBottom, vRight);
-                    cs[3] = createQuadColor(colors, uTop, vRight);
-
-                    cool = cs;
-                }
-                if (texs != nullptr)
-                {
-                    // same here with texutres
-                    ts[0] = createQuadPoint(texs, uTop, vLeft);
-                    ts[1] = createQuadPoint(texs, uBottom, vLeft);
-                    ts[2] = createQuadPoint(texs, uBottom, vRight);
-                    ts[3] = createQuadPoint(texs, uTop, vRight);
-                    texty = ts;
-                }
-                // assert(false);
-                // we are passing two triangles to drawmesh
-                // would be cool to draw them all but that's fine
-                drawMesh(vs, cool, texty, 2, indicies, paint);
-            }
-        }
-    }
-
-    GPoint createQuadPoint(const GPoint pts[], float u, float v)
-    {
-        GPoint p1 = pts[0];
-        GPoint p2 = pts[1];
-        GPoint p3 = pts[2];
-        GPoint p4 = pts[3];
-
-        float y = (1.0f - u) * (1.0f - v) * p1.y() + (1.0f - v) * u * p2.y() + u * v * p3.y() + (1.0f - u) * v * p4.y();
-        float x = (1.0f - u) * (1.0f - v) * p1.x() + (1.0f - v) * u * p2.x() + u * v * p3.x() + (1.0f - u) * v * p4.x();
-        return {x, y};
-    }
-
-    GColor createQuadColor(const GColor colors[], float u, float v)
-    {
-        GColor c1 = colors[0];
-        GColor c2 = colors[1];
-        GColor c3 = colors[2];
-        GColor c4 = colors[3];
-
-        float a = (1 - u) * (1 - v) * c1.a + (1 - v) * u * c2.a + (1 - u) * v * c4.a + u * v * c3.a;
-        float r = (1 - u) * (1 - v) * c1.r + (1 - v) * u * c2.r + (1 - u) * v * c4.r + u * v * c3.r;
-        float g = (1 - u) * (1 - v) * c1.g + (1 - v) * u * c2.g + (1 - u) * v * c4.g + u * v * c3.g;
-        float b = (1 - u) * (1 - v) * c1.b + (1 - v) * u * c2.b + (1 - u) * v * c4.b + u * v * c3.b;
-
-        return GColor::RGBA(r, g, b, a);
     }
 
     virtual void drawPath(const GPath &path, const GPaint &paint) override
@@ -213,7 +42,6 @@ public:
         GPath::Verb v;
         GPoint pts[4];
         std::vector<Edge> edges = {};
-        // assert(false);
         // clipping each edge from the edger
         while ((v = edger.next(pts)) != GPath::kDone)
         {
@@ -221,9 +49,6 @@ public:
             // in case there is a path with multiple types
             if (v == GPath::kLine)
             {
-                if (GRoundToInt(pts[0].fY) == 155 || GRoundToInt(pts[1].fY == 155)) {
-                    //hi
-                }
                 // ctm -> mapints(points, points, 2)]]
                 clip(pts[0], pts[1], edges, fDevice);
                 if (edges.size() > 0)
@@ -235,6 +60,7 @@ public:
             {
                 // getting the amount of segments and where they will lay in (0, 1) coordinates
                 int segmentCount = segCount(v, pts);
+                // int segmentCount = 3;
                 // printf("seg count: \n");
                 // std::cout << segmentCount << std::endl;
                 float step = 1.0f / segmentCount;
@@ -248,12 +74,22 @@ public:
                 {
                     evalfn = &eval_cubic;
                 }
-
+                // for (float t = 0.0f; t < 1.0f; t += step)
+                // stick to the beginning and end here
+                // P1 = pts[0];
+                // P2 = evalfn(pts, 0.0f);
+                // at the end, p2 = pts[1]
+                // for (int i = 0; i < segmentCount; i++)
+                // if (v == GPath::kCubic) {
+                //     Gpoint a = map
+                // }
+                GPoint save = P1;
+                
                 for (float t = 0.0f; t < 1.0f; t += step)
                 {
                     // WE MUST MAKE THE LINES TOUCH
                     // the previous p2 is the new p1
-                    // here is where we maintain topological contract
+                    // here is where we maintain topological contract 
 
                     P1 = P2;
                     P2 = evalfn(pts, t);
@@ -270,9 +106,18 @@ public:
                         assert(edges.back().fY >= 0);
                     }
                 }
-                clip(P1, pts[2], edges, fDevice);
+                if (v == GPath::kQuad)
+                {
+                    clip(P2, pts[2], edges, fDevice);
+                }
+                else
+                {
+                    clip(P2, pts[3], edges, fDevice);
+                }
+                // clip(P2, pts[2], edges, fDevice);
             }
         }
+        // clip(pts[0], pts[1], edges, fDevice);
 
         // sort (y, x, m)
         if (edges.size() == 0)
@@ -282,7 +127,6 @@ public:
         // sort by y
         std::sort(edges.begin(), edges.end(), pred);
         assert(edges[0].fY >= 0);
-        // assert(false);
         // scan -> blit
         complex_scan(edges, edges.size(), paint);
     }
@@ -303,14 +147,8 @@ public:
             // assert(false);
 
             // loop through active edges
-
-            while ((i < count) && (edges[i].fY <= y + 0.5))
+            while ((i < count) && (edges[i].fY <= y))
             {
-                // if (y == 370)
-                if (y == 42)
-                {
-                    // yuh
-                }
                 assert(edges[i].fY >= 0);
                 // resort = false;
                 if (i >= edges.size())
@@ -324,17 +162,15 @@ public:
                 w += edges[i].fWind;
                 if (w == 0)
                 {
-                    // verify lef tnad rightd
                     R = edges[i];
-                    if (R.fCurrX < L.fCurrX)
-                    {
+                    if (R.fCurrX < L.fCurrX) {
                         Edge tmp = L;
                         L = R;
                         R = tmp;
                     }
                     blit(L, R, y, paint);
                 }
-                if (y >= edges[i].fLastY)
+                if ((y - 1) >= edges[i].fLastY)
                 {
                     edges.erase(edges.begin() + i);
                     count--;
@@ -344,14 +180,8 @@ public:
                     edges[i].fCurrX += edges[i].fSlope;
                     i++;
                 }
+                std::sort(edges.begin(), edges.begin() + i, sortByX);
             }
-
-            while (i < count && y + 1 == edges[i].fY)
-            {
-                i += 1;
-            }
-            std::sort(edges.begin(), edges.begin() + i, sortByX);
-
             // assert(w == 0);
         }
     }
@@ -609,19 +439,13 @@ public:
             }
 
             // call the fn that traverses the x on the row we're on
-            if (R.fCurrX < L.fCurrX)
-            {
-                Edge tmp = L;
-                L = R;
-                R = tmp;
-            }
             blit(L, R, y, paint);
-
             // update x vals
             L.fCurrX = L.fSlope + L.fCurrX;
             R.fCurrX = R.fSlope + R.fCurrX;
         }
     }
+    
 
     // comparison tool for edge sorting
     static bool pred(Edge const &e1, Edge const &e2)

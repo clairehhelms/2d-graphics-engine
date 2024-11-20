@@ -27,14 +27,12 @@ public:
 
 class BitmapBench : public ShaderBench {
 public:
-    BitmapBench(const char imagePath[], const char* name, GShader::TileMode tm = GShader::kClamp)
-        : ShaderBench(name, 50)
-    {
+    BitmapBench(const char imagePath[], const char* name) : ShaderBench(name, 50) {
         GBitmap bm;
         bm.readFromFile(imagePath);
 //        printf("%s is opaque:%d\n", imagePath, bm.isOpaque());
         GMatrix mx = GMatrix::Scale(W * 1.0 / bm.width(), H * 1.0 / bm.height());
-        fShader = GCreateBitmapShader(bm, mx, tm);
+        fShader = GCreateBitmapShader(bm, mx);
     }
 };
 

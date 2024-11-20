@@ -2,11 +2,13 @@
  *  Copyright 2018 Mike Reed
  */
 
+#include "GMatrix.h"
 #include "GPath.h"
+#include "GTime.h"
 
 static void offset_pts(GPoint p[], int count, GVector d) {
     for (int i = 0; i < count; ++i) {
-        p[i] += d;
+        p[i] = p[i] + d;
     }
 }
 
@@ -30,14 +32,21 @@ static bool inside(const GPoint p[], int count, GPoint target) {
     return true;
 }
 
-static void draw_arrow(GCanvas* canvas, GPoint p0, GPoint p1, GColor color) {
-    GVector v = p1 - p0;
-    GVector uv = v * (1 / v.length());
-    GVector un = { uv.y(), -uv.x() };
-
-    GPoint c = p0 + v * 0.5;
-    GPoint pts[3] = { c + un * 4, c - un * 4, c + uv * 12 };
-    canvas->drawConvexPolygon(pts, 3, color);
+static float draw_arrows(GCanvas* canvas, GPoint p0, GPoint p1, const GColor& color,
+                         float period, float phase) {
+    const GVector v = p1 - p0;
+    const float len = v.length();
+    const GVector uv = v * (1 / len);
+    const GVector un = { uv.y(), -uv.x() };
+    
+    float dist = phase;
+    while (dist < len) {
+        GPoint c = p0 + uv * dist;
+        GPoint pts[3] = { c + un * 4, c - un * 4, c + uv * 12 };
+        canvas->drawConvexPolygon(pts, 3, color);
+        dist += period;
+    }
+    return dist - len;
 }
 
 static void set_rect_pts(GPoint pts[4], const GRect& r) {
@@ -80,7 +89,7 @@ public:
             fPtCount = 7;
             fCtrCount = 1;
             make_star(fPts, 7, 0);
-            (GMatrix::Translate(200, 200) * GMatrix::Scale(100, 100)).mapPoints(fPts, fPts, 7);
+            (GMatrix::Translate(200, 200) * GMatrix::Scale(100, 100)).mapPoints(fPts, 7);
             fCtrs[0] = { 7, &fPts[0] };
         }
     }
@@ -101,13 +110,19 @@ public:
         for (int i = 0; i < fPtCount; ++i) {
             canvas->drawRect(GRect::XYWH(fPts[i].x() - 2, fPts[i].y() - 2, 5, 5), p);
         }
+        
+        const double speed = 32;
+        const float period = 48.5;
+        float phase = fmod(GTime::GetMSec() * speed / 1000.0, period);
+
         int base = 0;
         for (int j = 0; j < fCtrCount; ++j) {
             for (int i = 0; i < fCtrs[j].fCount; ++i) {
                 GPoint p0 = fPts[base + i],
                 p1 = fPts[base + ((i + 1) % fCtrs[j].fCount)];
-                draw_line(canvas, p0, p1, {1,0,0,0}, 1);
-                draw_arrow(canvas, p0, p1, {1,0,0,0});
+                draw_line(canvas, p0, p1, {0,0,0,1}, 1);
+
+                phase = draw_arrows(canvas, p0, p1, {0,0,0,1}, period, phase);
             }
             base += fCtrs[j].fCount;
         }
@@ -123,6 +138,7 @@ public:
     void setRect(const GRect& r) override {}
     GColor onGetColor() override { return fColor; }
     void onSetColor(const GColor& c) override { fColor = c; }
+    bool animates() const override { return true; }
 
     GClick* findClick(GPoint p, GWindow* wind) override {
         if (GClick* click = Shape::findClick(p, wind)) {
